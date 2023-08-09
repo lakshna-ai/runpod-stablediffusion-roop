@@ -1,0 +1,1 @@
+change the runpod_url and runpod_api_key inside runpod_txt2img.py
