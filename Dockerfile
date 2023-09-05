@@ -50,7 +50,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     git clone https://github.com/s0md3v/sd-webui-roop extensions/sd-webui-roop && \
     pip install -r extensions/sd-webui-roop/requirements.txt && \
     mkdir –p models/roop && \
-    wget -O models/roop/inswapper_128.onnx https://huggingface.co/henryruhs/roop/resolve/main/inswapper_128.onnx
+    wget -O models/roop/inswapper_128.onnx https://huggingface.co/henryruhs/roop/resolve/main/inswapper_128.onnx && \
+    git clone https://github.com/lakshna-ai/sd-dynamic-prompts extensions/sd-dynamic-prompts
 
 COPY --from=download /repositories/ ${ROOT}/repositories/
 COPY --from=download /model.safetensors /model.safetensors
