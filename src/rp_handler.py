@@ -38,13 +38,21 @@ def run_inference(inference_request):
     endpoint = inference_request['endpoint']
     if endpoint in ['img2img','txt2img']:
         try:
-            roop_img = inference_request['roop_img']
-            inference_request["alwayson_scripts"] = {"roop": {"args":[roop_img, True, '0', '/stable-diffusion-webui/models/roop/inswapper_128.onnx', 'CodeFormer', 1, None, 1, 'None', False, True]}}
-            print(inference_request)
-            return automatic_session.post(url=f'http://127.0.0.1:3000/sdapi/v1/{endpoint}',json=inference_request, timeout=600).json()
+            model = inference_request['model']
+            inference_request['override_settings'] = {"sd_model_checkpoint": model}
         except:
-            r = automatic_session.post(url=f'http://127.0.0.1:3000/sdapi/v1/{endpoint}',json=inference_request, timeout=600)
-            return r.json()
+            inference_request['override_settings'] = {"sd_model_checkpoint": 'dreamshaper_8.safetensors'}
+        json_data = automatic_session.post(url=f'http://127.0.0.1:3000/sdapi/v1/{endpoint}',json=inference_request, timeout=600).json()
+        try:
+            roop_img = inference_request['roop_img']
+            for i in json_data['images']:
+                index_of_i = json_data['images'].index(i)
+                payload = {"source_image":roop_img,"target_image":i,"source_faces_index":[0],"face_index":[0],"upscaler":"4x_Struzan_300000","scale":2,"upscale_visibility":1,"face_restorer":"CodeFormer","restorer_visibility":1,"restore_first":1,"model":"inswapper_128.onnx","gender_source":0,"gender_target":0,"save_to_file":0,"result_file_path":""}
+                face_swaped_image = requests.post('http://127.0.0.1:3000/reactor/image', headers={'accept': 'application/json','Content-Type': 'application/json'}, json=payload).json()['image']
+                json_data['images'][index_of_i] = face_swaped_image
+            return json_data
+        except:
+            return json_data
     else:
         return {'error'}
 
