@@ -30,7 +30,8 @@ payload = {
         "cfg_scale": 7,
         "width": 512,
         "height": 512,
-        "restore_faces": True
+        "restore_faces": True,
+        "model":"Reliberate_v3.safetensors"
     }
 }
 headers = {
